@@ -14,6 +14,18 @@ This solution introduces a comprehensive analytics dashboard for monitoring and 
 
 From the root folder, run `npm install`
 
+#### 環境変数ファイル (.env) の準備
+
+サーバーは `src/server/.env` から環境変数を読み込みます。  
+`src/server/.env.example` をコピーして `.env` を作成し、実際の値を記入してください。
+
+```bash
+cp src/server/.env.example src/server/.env
+# その後、src/server/.env を編集して AWS 認証情報などを設定
+```
+
+**注意:** `.env` には AWS シークレットキーなどの機密情報が含まれるため、Git にコミットしないでください（`.gitignore` に追加することを推奨）。
+
 ### Set up client (front-end)
 1. Deploy an EC2 server by running `cdk deploy` inside `src/server/deploy/`
 3. To launch the client app, run `npm run client`
@@ -26,13 +38,22 @@ If you need inbound telephony, we strongly recommend running the server remotely
 If you do not need inbound telephony, or you only want to test the server, then you can simply host the server on `localhost`. This will accept *only web traffic*
 
 #### Option 1: Running the server locally over the internet
-1. Export your environment variables locally:
-```bash
-> export AWS_ACCESS_KEY_ID="your-access-key"
-> export AWS_SECRET_ACCESS_KEY="your-secret-key"
-> export AWS_DEFAULT_REGION="us-east-1"
-```
-2. Update your .env file with the location of your web server (e.g. `localhost` or a DNS URL like `mydomain.example.com`)
+1. 環境変数を設定します。`.env` ファイル（`src/server/.env`）に記入するか、シェルで `export` してください。
+
+   `.env` を使う場合（推奨）:
+   ```bash
+   cp src/server/.env.example src/server/.env
+   # src/server/.env を編集して AWS_ACCESS_KEY_ID などを設定
+   ```
+
+   またはシェルで直接 export する場合:
+   ```bash
+   > export AWS_ACCESS_KEY_ID="your-access-key"
+   > export AWS_SECRET_ACCESS_KEY="your-secret-key"
+   > export AWS_DEFAULT_REGION="us-east-1"
+   ```
+
+2. `SERVER_URL` を `.env` に設定します（ウェブサーバーの場所、例: `localhost` や `mydomain.example.com` などの DNS URL）。
 3. If you want to access your server over localhost from a web application, then you have nothing further to do. Simply access the app using your client. Note that you will not be able to accept inbound calls over the internet. If you want to accept inbound calls, you should instead run the server remotely using SSL (see below)
 
 #### Option 2: Running the server remotely using SSL (with inbound telephony)
@@ -46,13 +67,22 @@ If you do not need inbound telephony, or you only want to test the server, then 
 ```
 3. On your SSH server, run `npm install` to install all packages.
 4. Ensure that your networking configuration will accept traffic to port `443` and port `3000` (with our CDK package, this is true by default)
-5. Export your environment variables locally:
-```bash
-> export AWS_ACCESS_KEY_ID="your-access-key"
-> export AWS_SECRET_ACCESS_KEY="your-secret-key"
-> export AWS_DEFAULT_REGION="us-east-1"
-```
-5. To run the application, run:
+5. 環境変数を設定します。EC2 上で `.env` ファイル（`src/server/.env`）に記入するか、シェルで `export` してください。
+
+   `.env` を使う場合:
+   ```bash
+   cp src/server/.env.example src/server/.env
+   # src/server/.env を編集して AWS 認証情報などを設定
+   ```
+
+   またはシェルで直接 export する場合:
+   ```bash
+   > export AWS_ACCESS_KEY_ID="your-access-key"
+   > export AWS_SECRET_ACCESS_KEY="your-secret-key"
+   > export AWS_DEFAULT_REGION="us-east-1"
+   ```
+
+6. アプリケーションを実行します。
 ```bash
 > sudo AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN ts-node server.ts
 ```
