@@ -4,6 +4,7 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as elbv2 from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import * as targets from "aws-cdk-lib/aws-elasticloadbalancingv2-targets";
 
 export class ServerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -114,7 +115,7 @@ export class ServerStack extends cdk.Stack {
         vpc,
         port: 3001,
         protocol: elbv2.ApplicationProtocol.HTTP,
-        // targets: [new targets.InstanceTarget(instance)],
+        targets: [new targets.InstanceTarget(instance)],
         healthCheck: {
           path: "/",
           healthyHttpCodes: "200",
